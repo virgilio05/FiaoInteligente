@@ -22,8 +22,7 @@ public class ColmadoServicio
         decimal deuda = 0; bool vencido = false;
         if (cliente != null)
         {
-            var creditos = _repo.CreditosDe(cliente.Id);
-            foreach (var cr in creditos) cr.ActualizarEstado(DateTime.Now);
+            var creditos = CreditosActualizados(cliente.Id);
             deuda = creditos.Sum(x => x.Saldo);
             vencido = creditos.Any(x => x.Estado == EstadoCredito.Vencido && x.Saldo > 0);
         }
@@ -47,9 +46,23 @@ public class ColmadoServicio
         return venta;
     }
 
+    // Marca como Vencido (y guarda en BD) los créditos cuya fecha ya pasó.
+    public List<Credito> CreditosActualizados(int clienteId)
+    {
+        var lista = _repo.CreditosDe(clienteId);
+        using var c = Db.Abrir();
+        foreach (var cr in lista)
+        {
+            var antes = cr.Estado;
+            cr.ActualizarEstado(DateTime.Now);
+            if (cr.Estado != antes) _repo.GuardarEstadoCredito(c, cr);
+        }
+        return lista;
+    }
+
     public void RegistrarAbono(int creditoId, int clienteId, decimal monto)
     {
-        var cr = _repo.CreditosDe(clienteId).FirstOrDefault(x => x.Id == creditoId)
+        var cr = CreditosActualizados(clienteId).FirstOrDefault(x => x.Id == creditoId)
                  ?? throw new ReglaNegocioException("Crédito no encontrado para ese cliente.");
         cr.Abonar(monto);
         using var c = Db.Abrir(); using var tx = c.BeginTransaction();

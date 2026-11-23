@@ -29,5 +29,10 @@ public class Producto
         if (cantidad <= 0) throw new ArgumentException("La cantidad debe ser mayor que 0.");
         Stock += cantidad;
     }
+    public void CambiarPrecio(decimal nuevo)
+    {
+        if (nuevo <= 0) throw new ArgumentException("El precio debe ser mayor que 0.");
+        Precio = nuevo;
+    }
     public void Desactivar() => Activo = false;
 }
