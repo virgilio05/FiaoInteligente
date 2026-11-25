@@ -79,7 +79,7 @@ Ejecutadas manualmente sobre una base de datos vacía. El detalle de los datos d
 - **Detectado en:** T-14. La opción 9 mostraba `[Vencido]` en pantalla, pero la tabla `Credito` tenía el crédito 4 con `Estado = Activo`.
 - **Causa:** `Credito.ActualizarEstado` cambiaba solo el objeto en memoria y el servicio no escribía el cambio en la BD.
 - **Corrección:** se agregó `ColmadoServicio.CreditosActualizados`, que actualiza el estado y lo guarda cuando cambia. Se usa al vender, al abonar y al consultar créditos.
-- **Commit:** la corrección ya estaba aplicada al crear el repositorio, por lo que está incluida en el commit inicial `37396c4`.
+- **Commit de la corrección:** `4c895a4` ("fix: guarda en BD el estado Vencido de los créditos; agrega modificar precio, límite y desactivar cliente"). El defecto existía en el commit inicial `37396c4`.
 
 ## Uso de Inteligencia Artificial (Ruta A)
 | Elemento | Detalle |
